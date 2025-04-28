@@ -1,21 +1,15 @@
-
 import streamlit as st
-from reportlab.lib.pagesizes import A4
-from reportlab.pdfgen import canvas
-from reportlab.lib.units import cm
-from pathlib import Path
+from datetime import datetime
 
 st.set_page_config(page_title="Rastreamento e Vacinação", layout="centered")
 
-st.markdown("""# 🏥 Assistente de Rastreamento e Vacinação
-Preencha os dados do paciente para gerar orientações personalizadas de rastreio e vacinação.
-""")
+st.markdown("# 🏥 Assistente de Rastreamento e Vacinação")
 
-# Formulário guiado
+# Formulário principal
 with st.form("formulario"):
-    sexo = st.selectbox("🧬 Sexo biológico", ["", "Feminino", "Masculino"])
-    idade = st.number_input("🎂 Idade", min_value=0, max_value=120, step=1)
-    profissional_saude = st.checkbox("🩺 Profissional de Saúde")
+    sexo = st.selectbox("Sexo biológico", ["", "Feminino", "Masculino"])
+    idade = st.number_input("Idade", min_value=0, max_value=120, step=1)
+    profissional_saude = st.checkbox("Profissional de Saúde")
 
     st.markdown("### 📋 Fatores clínicos e antecedentes")
     col1, col2 = st.columns(2)
@@ -23,90 +17,78 @@ with st.form("formulario"):
         imc_alto = st.checkbox("IMC ≥ 25")
         tabagista = st.checkbox("Tabagista ou ex-tabagista")
         gestante = st.checkbox("Gestante")
-        ca_mama = st.checkbox("Hist. familiar de câncer de mama")
-        ca_prostata = st.checkbox("Hist. familiar de câncer de próstata")
-        ca_colon = st.checkbox("Hist. familiar de câncer colorretal")
+        ca_mama = st.checkbox("Histórico familiar de câncer de mama")
+        ca_prostata = st.checkbox("Histórico familiar de câncer de próstata")
+        ca_colon = st.checkbox("Histórico familiar de câncer colorretal")
     with col2:
         dm = st.checkbox("Diabetes Mellitus")
         dpoc = st.checkbox("DPOC")
-        imunossuprimido = st.checkbox("Imunossuprimido (por doença ou medicação)")
+        imunossuprimido = st.checkbox("Imunossuprimido")
         cardiovascular = st.checkbox("Doença cardiovascular crônica")
         renal = st.checkbox("Doença renal crônica")
         hepatopatia = st.checkbox("Doença hepática crônica")
         cancer = st.checkbox("Neoplasia ativa")
 
-    submit = st.form_submit_button("🧾 Gerar Recomendações")
-
-# Função para gerar PDF com ReportLab
-def gerar_pdf(titulo, linhas, caminho_destino):
-    c = canvas.Canvas(caminho_destino, pagesize=A4)
-    largura, altura = A4
-    c.setFont("Helvetica-Bold", 14)
-    c.drawCentredString(largura / 2, altura - 2 * cm, "Hospital Universitário – Protocolo de Rastreamento")
-    c.setFont("Helvetica-Bold", 12)
-    c.drawString(2 * cm, altura - 3 * cm, titulo)
-
-    c.setFont("Helvetica", 11)
-    y = altura - 4 * cm
-    for linha in linhas:
-        if y < 2 * cm:
-            c.showPage()
-            y = altura - 2 * cm
-            c.setFont("Helvetica", 11)
-        c.drawString(2 * cm, y, linha)
-        y -= 1 * cm
-
-    c.save()
+    submit = st.form_submit_button("Gerar Recomendações")
 
 if submit:
     respostas = []
 
+    # Rastreio
     if sexo == "Feminino":
         if 40 <= idade <= 74:
-            respostas.append("✔️ Mamografia anual. [Ver diretriz (PDF)](https://github.com/vitordominato/ambulat-rio/blob/main/cancer%20mama%20rastreo.pdf)")
+            respostas.append("✔️ Mamografia anual recomendada. [Ver diretriz (PDF)](https://raw.githubusercontent.com/vitordominato/ambulatorio/main/cancer%20mama%20rastreo.pdf)")
         if ca_mama and idade >= 35:
-            respostas.append("✔️ Mamografia antecipada por histórico familiar.")
+            respostas.append("✔️ Rastreio antecipado para câncer de mama.")
         if 25 <= idade <= 65:
-            respostas.append("✔️ Papanicolau. [Ver diretriz (PDF)](https://github.com/vitordominato/ambulat-rio/blob/main/diretrizes_para_o_rastreamento_do_cancer_do_colo_do_utero_2016_corrigido.pdf)")
+            respostas.append("✔️ Papanicolau recomendado. [Ver diretriz (PDF)](https://raw.githubusercontent.com/vitordominato/ambulatorio/main/diretrizes_para_o_rastreamento_do_cancer_do_colo_do_utero_2016_corrigido.pdf)")
 
     if sexo == "Masculino":
         if idade >= 50:
-            respostas.append("✔️ PSA e USG prostático. [Ver diretriz (PDF)](https://github.com/vitordominato/ambulat-rio/blob/main/rastreamento_prostat_2023_sociedades.pdf)")
+            respostas.append("✔️ PSA e USG prostático recomendados. [Ver diretriz (PDF)](https://raw.githubusercontent.com/vitordominato/ambulatorio/main/rastreamento_prostat_2023_sociedades.pdf)")
         if ca_prostata and idade >= 45:
-            respostas.append("✔️ Rastreio antecipado de próstata.")
+            respostas.append("✔️ Rastreio antecipado para câncer de próstata.")
 
     if ca_colon and idade >= 38:
-        respostas.append("✔️ Colonoscopia antecipada. [Ver diretriz (PDF)](https://github.com/vitordominato/ambulat-rio/blob/main/CÂNCER%20COLORRETAL_DO%20DIAGNÓSTICO%20AO%20TRATAMENTO.pdf)")
+        respostas.append("✔️ Colonoscopia antecipada recomendada. [Ver diretriz (PDF)](https://raw.githubusercontent.com/vitordominato/ambulatorio/main/CÂNCER%20COLORRETAL_DO%20DIAGNÓSTICO%20AO%20TRATAMENTO.pdf)")
 
     if tabagista and 50 <= idade <= 80:
-        respostas.append("✔️ TC de tórax de baixa dose. [Ver diretriz (PDF)](https://github.com/vitordominato/ambulat-rio/blob/main/tabagismo%20ca%20pulmao.pdf)")
+        respostas.append("✔️ TC de Tórax de baixa dose para tabagistas. [Ver diretriz (PDF)](https://raw.githubusercontent.com/vitordominato/ambulatorio/main/tabagismo%20ca%20pulmao.pdf)")
 
     if imc_alto or dm or cardiovascular or renal or hepatopatia:
-        respostas.append("✔️ Avaliação metabólica. [Ver diretriz (PDF)](https://github.com/vitordominato/ambulat-rio/blob/main/Diretrizes-Brasileiras-de-Obesidade-2016.pdf)")
+        respostas.append("✔️ Avaliação metabólica recomendada. [Ver diretriz (PDF)](https://raw.githubusercontent.com/vitordominato/ambulatorio/main/Diretrizes-Brasileiras-de-Obesidade-2016.pdf)")
 
     if idade >= 50:
-        respostas.append("✔️ Rastreio de gamopatias. [Ver diretriz (PDF)](https://github.com/vitordominato/ambulat-rio/blob/main/Gamopatias_monoclonais_criterios_diagnosticos.pdf)")
+        respostas.append("✔️ Avaliação para gamopatias monoclonais. [Ver diretriz (PDF)](https://raw.githubusercontent.com/vitordominato/ambulatorio/main/Gamopatias_monoclonais_criterios_diagnosticos.pdf)")
 
+    # Vacinas
     if profissional_saude:
-        respostas.append("💉 DTPa, Hepatite B (0,1,6 meses), Gripe, COVID-19. [SBIm/PNI]")
+        respostas.append("💉 Recomendada vacinação DTPa, Hepatite B, Influenza, COVID-19 (profissionais de saúde).")
 
     if gestante:
-        respostas.append("💉 DTPa (20–36 semanas), VSR (32–36 semanas).")
+        respostas.append("💉 Recomendada vacinação DTPa (20–36 semanas) e VSR (32–36 semanas) para gestantes.")
 
     if dpoc or cardiovascular or renal or imunossuprimido or gestante or dm or cancer or hepatopatia:
-        respostas.append("💉 Pneumo 20V + 23V; Herpes-zóster (0, 2 meses); considerar Dengue. [SBIm]")
+        respostas.append("💉 Indicação de vacinação pneumocócica 20V + 23V; considerar herpes-zóster; considerar vacina para dengue.")
 
     if 18 <= idade <= 45:
-        respostas.append("💉 HPV: 2 ou 3 doses conforme idade e imunidade.")
+        respostas.append("💉 Vacinação contra HPV recomendada.")
 
+    # Exibição das respostas
     if respostas:
-        st.success("✅ Recomendações geradas com sucesso!")
+        st.success("✅ Recomendações:")
         for r in respostas:
             st.markdown(f"- {r}")
-        if st.button("📄 Baixar Resumo em PDF"):
-            nome_pdf = "resumo_rastreamento.pdf"
-            gerar_pdf("Resumo de Recomendacoes Personalizadas", respostas, nome_pdf)
-            with open(nome_pdf, "rb") as f:
-                st.download_button("⬇️ Download do PDF", f, file_name=nome_pdf, mime="application/pdf")
+
+        st.info("Calendários Oficiais de Vacinação – SBIm")
+        st.markdown("""
+        Consulte abaixo os esquemas vacinais recomendados pela SBIm:
+
+        - [Ver Calendário SBIm – Adultos (20–59 anos)](https://raw.githubusercontent.com/vitordominato/ambulatorio/main/calend-pg-adulto-20-.pdf)
+        - [Ver Calendário SBIm – Idosos (≥ 60 anos)](https://raw.githubusercontent.com/vitordominato/ambulatorio/main/calend-sbim-idoso.pdf)
+        - [Ver Calendário SBIm – Gestantes](https://raw.githubusercontent.com/vitordominato/ambulatorio/main/calend-sbim-gestante.pdf)
+        - [Ver Calendário SBIm – Profissionais de Saúde](https://raw.githubusercontent.com/vitordominato/ambulatorio/main/calend-sbim-ocupacio.pdf)
+        """)
     else:
-        st.info("⚠️ Nenhuma recomendação encontrada com os critérios informados.")
+        st.info("Nenhuma recomendação encontrada com os critérios informados.")
+
