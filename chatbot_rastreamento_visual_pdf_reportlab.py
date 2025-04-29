@@ -34,7 +34,7 @@ with st.form("formulario"):
 if submit:
     respostas = []
 
-    # Rastreio
+    # Rastreio de mama
     if sexo == "Feminino":
         if 40 <= idade <= 74:
             respostas.append("✔️ Mamografia anual recomendada. [Ver diretriz (PDF)](https://raw.githubusercontent.com/vitordominato/ambulatorio/main/cancer%20mama%20rastreo.pdf)")
@@ -43,35 +43,42 @@ if submit:
         if 25 <= idade <= 65:
             respostas.append("✔️ Papanicolau recomendado. [Ver diretriz (PDF)](https://raw.githubusercontent.com/vitordominato/ambulatorio/main/diretrizes_para_o_rastreamento_do_cancer_do_colo_do_utero_2016_corrigido.pdf)")
 
+    # Rastreio de próstata
     if sexo == "Masculino":
         if idade >= 50:
             respostas.append("✔️ PSA e USG prostático recomendados. [Ver diretriz (PDF)](https://raw.githubusercontent.com/vitordominato/ambulatorio/main/rastreamento_prostat_2023_sociedades.pdf)")
         if ca_prostata and idade >= 45:
             respostas.append("✔️ Rastreio antecipado para câncer de próstata.")
 
-    # Histórico familiar de câncer colorretal (ajustado)
-if ca_colon and idade >= 40:
-    respostas.append("✔️ Colonoscopia antecipada recomendada devido a histórico familiar de câncer colorretal (parente de primeiro grau). Iniciar rastreamento aos 40 anos ou 10 anos antes da idade de diagnóstico do familiar, o que ocorrer primeiro. [Ver diretriz (PDF)](https://raw.githubusercontent.com/vitordominato/ambulatorio/main/CÂNCER%20COLORRETAL_DO%20DIAGNÓSTICO%20AO%20TRATAMENTO.pdf)")
+    # Rastreio de câncer colorretal (corrigido)
+    if ca_colon and idade >= 40:
+        respostas.append("✔️ Colonoscopia antecipada recomendada devido a histórico familiar de câncer colorretal (parente de primeiro grau). Iniciar rastreamento aos 40 anos ou 10 anos antes da idade de diagnóstico do familiar, o que ocorrer primeiro. [Ver diretriz (PDF)](https://raw.githubusercontent.com/vitordominato/ambulatorio/main/CÂNCER%20COLORRETAL_DO%20DIAGNÓSTICO%20AO%20TRATAMENTO.pdf)")
 
+    # TC de Tórax para tabagistas
     if tabagista and 50 <= idade <= 80:
         respostas.append("✔️ TC de Tórax de baixa dose para tabagistas. [Ver diretriz (PDF)](https://raw.githubusercontent.com/vitordominato/ambulatorio/main/tabagismo%20ca%20pulmao.pdf)")
 
+    # Avaliação metabólica
     if imc_alto or dm or cardiovascular or renal or hepatopatia:
         respostas.append("✔️ Avaliação metabólica recomendada. [Ver diretriz (PDF)](https://raw.githubusercontent.com/vitordominato/ambulatorio/main/Diretrizes-Brasileiras-de-Obesidade-2016.pdf)")
 
+    # Avaliação para gamopatias monoclonais
     if idade >= 50:
         respostas.append("✔️ Avaliação para gamopatias monoclonais. [Ver diretriz (PDF)](https://raw.githubusercontent.com/vitordominato/ambulatorio/main/Gamopatias_monoclonais_criterios_diagnosticos.pdf)")
 
-    # Vacinas
+    # Vacinação para profissionais da saúde
     if profissional_saude:
         respostas.append("💉 Recomendada vacinação DTPa, Hepatite B, Influenza, COVID-19 (profissionais de saúde).")
 
+    # Vacinação para gestantes
     if gestante:
         respostas.append("💉 Recomendada vacinação DTPa (20–36 semanas) e VSR (32–36 semanas) para gestantes.")
 
+    # Indicação de vacinação em comorbidades
     if dpoc or cardiovascular or renal or imunossuprimido or gestante or dm or cancer or hepatopatia:
         respostas.append("💉 Indicação de vacinação pneumocócica 20V + 23V; considerar herpes-zóster; considerar vacina para dengue.")
 
+    # HPV
     if 18 <= idade <= 45:
         respostas.append("💉 Vacinação contra HPV recomendada.")
 
@@ -92,4 +99,3 @@ if ca_colon and idade >= 40:
         """)
     else:
         st.info("Nenhuma recomendação encontrada com os critérios informados.")
-
