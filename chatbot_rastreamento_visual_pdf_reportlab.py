@@ -49,8 +49,9 @@ if submit:
         if ca_prostata and idade >= 45:
             respostas.append("✔️ Rastreio antecipado para câncer de próstata.")
 
-    if ca_colon and idade >= 38:
-        respostas.append("✔️ Colonoscopia antecipada recomendada. [Ver diretriz (PDF)](https://raw.githubusercontent.com/vitordominato/ambulatorio/main/CÂNCER%20COLORRETAL_DO%20DIAGNÓSTICO%20AO%20TRATAMENTO.pdf)")
+    # Histórico familiar de câncer colorretal (ajustado)
+if ca_colon and idade >= 40:
+    respostas.append("✔️ Colonoscopia antecipada recomendada devido a histórico familiar de câncer colorretal (parente de primeiro grau). Iniciar rastreamento aos 40 anos ou 10 anos antes da idade de diagnóstico do familiar, o que ocorrer primeiro. [Ver diretriz (PDF)](https://raw.githubusercontent.com/vitordominato/ambulatorio/main/CÂNCER%20COLORRETAL_DO%20DIAGNÓSTICO%20AO%20TRATAMENTO.pdf)")
 
     if tabagista and 50 <= idade <= 80:
         respostas.append("✔️ TC de Tórax de baixa dose para tabagistas. [Ver diretriz (PDF)](https://raw.githubusercontent.com/vitordominato/ambulatorio/main/tabagismo%20ca%20pulmao.pdf)")
